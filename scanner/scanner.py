@@ -1,4 +1,5 @@
 import re
+import sys
 
 RULES = [
     ("HIGH", "Hardcoded secret", r"(password|api_key|secret)\s*=\s*['\"][^'\"]+['\"]"),
@@ -21,3 +22,25 @@ def scan_code(code):
                 })
 
     return findings
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python -m scanner.scanner <file>")
+        return
+
+    with open(sys.argv[1], encoding="utf-8") as file:
+        findings = scan_code(file.read())
+
+    for finding in findings:
+        print(
+            f"{finding['severity']:<7} "
+            f"Line {finding['line']:<3} "
+            f"{finding['issue']}"
+        )
+
+    print(f"\n{len(findings)} finding(s) detected.")
+
+
+if __name__ == "__main__":
+    main()
